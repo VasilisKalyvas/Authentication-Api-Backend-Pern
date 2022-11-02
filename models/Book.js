@@ -9,6 +9,9 @@ module.exports = (sequelize, DataTypes) => {
         published: {
             type: DataTypes.BOOLEAN
         },
+        publishedYear: {
+            type: DataTypes.NUMBER
+        },
         writter: {
             type: DataTypes.STRING
         },
@@ -22,10 +25,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             type: DataTypes.DATE
           },
-          updatedAt: {
+        updatedAt: {
             allowNull: false,
             type: DataTypes.DATE
-          }
+        }
     });
     return Book;
 }

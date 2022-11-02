@@ -38,19 +38,46 @@ const getbook =  async (req, res) => {
     })
 };
 
+//Sort Books in Asc order by published Year
+const sortASCBooksByPublisedYear =  async (req, res) => {
+    await models.Book.findAll({
+        order: [
+            ['publishedYear', 'ASC'],
+        ],
+    })
+    .then((books) => {
+            res.json(books)
+    })
+    .catch((err)=> {
+        console.log(err);
+    })
+};
 
-
-
+//Sort Books in Desc order by published Year
+const sortDESCBooksByPublisedYear =  async (req, res) => {
+    await models.Book.findAll({
+        order: [
+            ['publishedYear', 'DESC'],
+        ],
+    })
+    .then((books) => {
+            res.json(books)
+    })
+    .catch((err)=> {
+        console.log(err);
+    })
+};
 //Create book
 const createbook =  async (req, res) => {
-   const {title, description, writter, published, bookImage, copies} = req.body;
+   const {title, description, writter, published, bookImage, copies, publishedYear} = req.body;
    await models.Book.create({
         title: title,
         description: description,
         published: published,
         writter: writter,
         bookImage: bookImage,
-        copies: copies
+        copies: copies,
+        publishedYear: publishedYear
    })
    .then((books) => {
         res.send(books)
@@ -63,14 +90,15 @@ const createbook =  async (req, res) => {
 //Update book
 const updatebook =  async (req, res) => {
     const { id } = req.params
-    const {title, description, writter, bookImage, published, copies} = req.body;
+    const {title, description, writter, bookImage, published, copies, publishedYear} = req.body;
     await models.Book.update({
             title: title,
             description: description,
             published: published,
             writter: writter,
             bookImage: bookImage,
-            copies: copies
+            copies: copies,
+            publishedYear: publishedYear,
         },
         { where: { id: id } }
     )
@@ -100,5 +128,7 @@ module.exports = {
     getBooksByWritter,
     createbook,
     updatebook,
-    deletebook
+    deletebook,
+    sortASCBooksByPublisedYear,
+    sortDESCBooksByPublisedYear
 }

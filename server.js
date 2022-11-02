@@ -2,7 +2,7 @@ const express = require("express");
 const db = require("./models");
 const cors = require("cors");
 const booksRoutes = require("./routes/books.js");
-
+const authRoutes = require("./routes/auth.js");
 
 const app = express();
 const PORT = 5000;
@@ -13,6 +13,7 @@ app.use(cors());
 
 //ROUTES
 app.use('/api/books', booksRoutes);
+app.use('/api/auth', authRoutes);
 
 db.sequelize.sync().then(() => {
     app.listen(PORT, () => {
