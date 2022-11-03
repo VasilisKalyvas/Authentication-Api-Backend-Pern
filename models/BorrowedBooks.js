@@ -21,10 +21,13 @@ module.exports = (sequelize, DataTypes) => {
         copies: {
             type: DataTypes.STRING
         },
+        expiredAt: {
+            type: DataTypes.STRING,
+        },
         createdAt: {
             allowNull: false,
             type: DataTypes.DATE
-          },
+        },
         updatedAt: {
             allowNull: false,
             type: DataTypes.DATE

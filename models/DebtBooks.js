@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING
         },
         copies: {
-            type: DataTypes.STRING
+            type: DataTypes.DATE
         },
         createdAt: {
             allowNull: false,

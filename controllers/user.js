@@ -1,5 +1,5 @@
 const models = require('../models')
-
+const cron = require("node-cron");
 
 //Borrow Book
 const borrowBook = async (req, res) => {
@@ -27,6 +27,9 @@ const borrowBook = async (req, res) => {
     return res.status(401).json("User already has borrowed this book!");
   }
   try {
+    const after1Week = new Date();
+    after1Week.setDate(after1Week.getDate() + 7);
+    
     const borrowedBook = await models.BorrowedBooks.create({
         UserId: req.body.UserId,
         BookId: book.id,
@@ -36,7 +39,8 @@ const borrowBook = async (req, res) => {
         writter: book.writter,
         bookImage: book.bookImage,
         copies: book.copies-1,
-        publishedYear: book.publishedYear
+        publishedYear: book.publishedYear,
+        expiredAt: after1Week.toUTCString()
     })
     await models.Book.update({
        copies: book.copies-1
@@ -74,6 +78,46 @@ const deleteborrow =  async (req, res) => {
             console.log(err);
     })
 };
+
+{
+  /*
+    const date = new Date();
+    console.log('Today:', date);
+    date.setDate(date.getDate() + 7);
+    console.log('After 1 week:', date);
+  */
+}
+
+// For now every 1 min 
+// Check every 5 hours if borrow time has expired (1 week)
+const checkForExpired = async () => {
+    console.log('job every 1 min');
+    const borrowed = await models.BorrowedBooks.findAll({raw : true})
+    if(borrowed.length === 0){
+      return 0;
+    }
+    const current = new Date();
+    for(let i = 0; i<borrowed.length; i++){
+      if(borrowed[i].expiredAt <= current){ // if expired date is past
+        console.log('Expired', borrowed[i].title);
+        await models.Book.update(
+          {
+            copies: borrowed[i].copies + 1
+          },
+          { where: { id: borrowed[i].BookId } }
+        )
+        await models.BorrowedBooks.destroy({ where: { id: borrowed[i].id } })
+      }else{
+        console.log('Not expired Yet', borrowed[i].title);
+      }
+    }
+    
+}
+// ('* * * * *') every 1 min
+// ('0 */5 * * *') every 5 hours
+cron.schedule('* * * * *', () => {
+  checkForExpired();
+})
 
 module.exports = {
     borrowBook,
