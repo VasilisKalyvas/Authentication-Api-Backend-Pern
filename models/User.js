@@ -13,12 +13,6 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             defaultValue: false
         },
-        borrowed: {
-            type: DataTypes.ARRAY(DataTypes.STRING)
-        },
-        debts: {
-            type: DataTypes.ARRAY(DataTypes.STRING)
-        },
         createdAt: {
             allowNull: false,
             type: DataTypes.DATE
@@ -28,5 +22,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE
         }
     });
+
+    User.associate = models => {
+        User.hasMany(models.BorrowedBooks, {
+            onDelete: "cascade"
+        });
+        User.hasMany(models.DebtBooks, {
+            onDelete: "cascade"
+        });
+    };
     return User;
 }

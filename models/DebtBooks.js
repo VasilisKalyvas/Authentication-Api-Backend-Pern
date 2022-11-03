@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const Book = sequelize.define("Book", {
+    const DebtBooks = sequelize.define("DebtBooks", {
         title: {
            type: DataTypes.STRING
         },
@@ -30,5 +30,18 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE
         }
     });
-    return Book;
+
+    DebtBooks.associate = models => {
+        DebtBooks.belongsTo(models.User, {
+            foreingKey: {
+                allowNull: false
+            }
+        });
+        DebtBooks.belongsTo(models.Book, {
+            foreingKey: {
+                allowNull: false
+            }
+        });
+    };
+    return DebtBooks;
 }

@@ -9,7 +9,8 @@ const login = async (req, res) => {
     const user = await models.User.findOne({
       where: {
         email
-      }
+      },
+      include: [models.BorrowedBooks, models.DebtBooks]
     })
 
     if (!user) {
@@ -37,6 +38,7 @@ const login = async (req, res) => {
 const signup = async (req, res) => {
     const {name, email, password } = req.body
   try {
+    
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -45,6 +47,7 @@ const signup = async (req, res) => {
         email: email,
         password: hashedPassword
    })
+
    const jwtToken = jwtGenerator(user.id, user.role);
     return res.status(201).json({
       success: true,
@@ -52,6 +55,7 @@ const signup = async (req, res) => {
       jwtToken,
       user
     })
+
   } catch (error) {
     console.log(error.message)
     return res.status(500).json({
