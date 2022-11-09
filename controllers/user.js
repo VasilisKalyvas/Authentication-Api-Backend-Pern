@@ -70,6 +70,10 @@ const deleteborrow =  async (req, res) => {
      },
      { where: { id: borrow.BookId } }
     )
+    const isInDebt = await models.DeptBooks.findByPk(borrow.BookId);
+    if(isInDebt){
+      await models.DeptBooks.destroy({ where: { BookId: isInDebt.BookId } })
+    }
     await models.BorrowedBooks.destroy({ where: { id: id } })
     .then((borrow) => {
             res.json(borrow);
@@ -77,6 +81,34 @@ const deleteborrow =  async (req, res) => {
     .catch((err)=> {
             console.log(err);
     })
+};
+
+//Return Book
+const returnBook =  async (req, res) => {
+  const {id} = req.params;
+  const borrow = await models.BorrowedBooks.findByPk(id);
+  if(req.user.id.toString() !== borrow.UserId){
+    return res.status(401).json("You dont have access in this action!");
+  }
+  if(!borrow){
+      return res.status(401).json("Borrow doesn't exist!");
+  }
+  await models.Book.update({
+      copies: borrow.copies + 1
+   },
+   { where: { id: borrow.BookId } }
+  )
+  const isInDebt = await models.DeptBooks.findByPk(borrow.BookId);
+  if(isInDebt){
+    await models.DeptBooks.destroy({ where: { BookId: isInDebt.BookId } })
+  }
+  await models.BorrowedBooks.destroy({ where: { id: id } })
+  .then((borrow) => {
+          res.json(borrow);
+  })
+  .catch((err)=> {
+          console.log(err);
+  })
 };
 
 {
@@ -100,15 +132,17 @@ const checkForExpired = async () => {
     for(let i = 0; i<borrowed.length; i++){
       if(borrowed[i].expiredAt <= current){ // if expired date is past
         console.log('Expired', borrowed[i].title);
-        await models.Book.update(
-          {
-            copies: borrowed[i].copies + 1
-          },
-          { where: { id: borrowed[i].BookId } }
-        )
-        await models.BorrowedBooks.destroy({ where: { id: borrowed[i].id } })
-      }else{
-        console.log('Not expired Yet', borrowed[i].title);
+        await models.DeptBooks.create({
+          UserId: req.body.UserId,
+          BookId: borrowed[i].id,
+          title: borrowed[i].title,
+          description: borrowed[i].description,
+          published: borrowed[i].published,
+          writter: borrowed[i].writter,
+          bookImage: borrowed[i].bookImage,
+          copies: borrowed[i].copies-1,
+          publishedYear: borrowed[i].publishedYear,
+        })
       }
     }
     
@@ -121,5 +155,6 @@ cron.schedule('* * * * *', () => {
 
 module.exports = {
     borrowBook,
-    deleteborrow
+    deleteborrow,
+    returnBook
 }
