@@ -10,7 +10,7 @@ const login = async (req, res) => {
       where: {
         email
       },
-      include: [models.BorrowedBooks, models.DebtBooks]
+      //include: [models.Example]
     })
 
     if (!user) {

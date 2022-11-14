@@ -22,14 +22,5 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE
         }
     });
-
-    User.associate = models => {
-        User.hasMany(models.BorrowedBooks, {
-            onDelete: "cascade"
-        });
-        User.hasMany(models.DebtBooks, {
-            onDelete: "cascade"
-        });
-    };
     return User;
 }
