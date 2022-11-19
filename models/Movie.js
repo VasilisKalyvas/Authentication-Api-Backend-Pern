@@ -1,17 +1,13 @@
 module.exports = (sequelize, DataTypes) => {
-    const User = sequelize.define("User", {
-        name: {
+    const Movie = sequelize.define("Movie", {
+        title: {
            type: DataTypes.STRING
         },
-        email: {
+        description: {
             type: DataTypes.STRING
         },
-        password: {
+        image: {
             type: DataTypes.STRING
-        },
-        role: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false
         },
         createdAt: {
             allowNull: false,
@@ -21,11 +17,15 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             type: DataTypes.DATE
         }
+        
     });
-    User.associate = models => {
-        User.hasMany(models.Tickets, {
+    Movie.associate = models => {
+        Movie.hasMany(models.Tickets, {
             onDelete: "cascade"
         });
+        Movie.hasMany(models.Projection, {
+            onDelete: "cascade"
+          });
     };
-    return User;
+    return Movie;
 }

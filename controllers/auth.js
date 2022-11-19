@@ -10,7 +10,6 @@ const login = async (req, res) => {
       where: {
         email
       },
-      //include: [models.Example]
     })
 
     if (!user) {
@@ -64,7 +63,8 @@ const signup = async (req, res) => {
   }
 }
 
+
 module.exports = {
     login,
-    signup
+    signup,
 }

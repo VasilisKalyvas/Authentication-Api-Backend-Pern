@@ -1,15 +1,10 @@
 module.exports = (sequelize, DataTypes) => {
-    const User = sequelize.define("User", {
+    const Rows = sequelize.define("Rows", {
         name: {
            type: DataTypes.STRING
         },
-        email: {
-            type: DataTypes.STRING
-        },
-        password: {
-            type: DataTypes.STRING
-        },
-        role: {
+        isFull: {
+            allowNull: false,
             type: DataTypes.BOOLEAN,
             defaultValue: false
         },
@@ -22,10 +17,19 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE
         }
     });
-    User.associate = models => {
-        User.hasMany(models.Tickets, {
+
+    Rows.associate = models => {
+        Rows.belongsTo(models.Halls, {
+            foreingKey: {
+                allowNull: false
+            }
+        });
+        Rows.hasMany(models.Seats, {
+            onDelete: "cascade"
+        });
+        Rows.hasMany(models.Tickets, {
             onDelete: "cascade"
         });
     };
-    return User;
+    return Rows;
 }
